@@ -87,7 +87,7 @@ exports.userManagement = async (req, res) => {
 
 exports.reportedPosts= async (req,res)=>{
    try {
-      const post=await Post.find({reportedStatus:true}).populate('report.reportedBy').populate('userid')
+      const post=await Post.find({reportedStatus:true,delete:false}).populate('report.reportedBy').populate('userid')
    
       console.log(post,'posttt');
       res.json(post)

@@ -62,12 +62,16 @@ const userSchema = mongoose.Schema(
       type:String
 
     },
+    following: [{
+      type: ObjectId,
+      ref: 'User'
+    }],
    
-    following: {
-      type: Array,
-      ref:"User",
-      default: [],
-    },
+    // following: {
+    //   type: Array,
+    //   ref:"User",
+    //   default: [],
+    // },
     followers: {
       type: Array,
       ref:"User",
@@ -77,14 +81,10 @@ const userSchema = mongoose.Schema(
    
     savedPosts: [
       {
-        post: {
+       
           type: ObjectId,
           ref: "Post",
-        },
-        savedAt: {
-          type: Date,
-          default: new Date(),
-        },
+        
       },
     ],
   },

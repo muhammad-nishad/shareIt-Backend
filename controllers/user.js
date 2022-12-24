@@ -336,6 +336,7 @@ exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts").sort({ createdAt: -1 })
+        console.log(post);
         res.json(post)
     } catch (error) {
         console.log(error);
@@ -369,11 +370,12 @@ exports.getUserProfile = async (req, res) => {
 exports.follow = async (req, res) => {
     try {
         const followingId = mongoose.Types.ObjectId(req.body.userid)
+        console.log('frnd id', followingId)
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(followingId)
-        console.log(user,'dheeraj');
+        console.log(user, 'dheeraj');
         const currentUser = await User.findById(req.user.id)
-        console.log(currentUser,'fiya');
+        console.log(currentUser, 'fiya');
         if (!user?.followers.includes(userid)) {
             await user?.updateOne({ $push: { followers: userid } });
             await currentUser?.updateOne({ $push: { following: followingId } })
@@ -394,7 +396,9 @@ exports.follow = async (req, res) => {
 exports.getAllFollowing = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user = await User.findById(req.user.id).populate('following')
+        console.log(userid, 'fareeda');
+        const user = await User.findById(userid).populate('following')
+        console.log(user, 'follwoingList');
         res.json(user)
     } catch (error) {
         console.log(error);
@@ -483,22 +487,23 @@ exports.savePost = async (req, res) => {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
         const postId = mongoose.Types.ObjectId(req.body.postid)
-        if (!user.savedPosts.some((savedPosts) => savedPosts.post + '' == postId)) {
+        if (!user.savedPosts.includes(postId)) {
             await user.updateOne
                 ({
                     $push: {
                         savedPosts: {
-                            post: postId
+                            $each:[postId],
+                            $position:0
+                            
                         }
                     }
                 });
             res.status(200).json({ type: "added" })
         } else {
+            console.log("removed")
             await user.updateOne({
                 $pull: {
-                    savedPosts: {
-                        post: postId
-                    }
+                    savedPosts:postId
                 }
             })
             res.status(200).json({ type: "removed" })
@@ -512,7 +517,7 @@ exports.savePost = async (req, res) => {
 exports.getSavedPosts = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user = await User.findById(userid).populate('savedPosts.post')
+        const user = await User.findById(userid).populate('savedPosts')
         res.status(200).json(user)
 
     } catch (error) {
@@ -574,7 +579,7 @@ exports.updateUserDetails = async (req, res) => {
                 last_name: lastName
             }
         })
-        console.log(user,'after updaton');
+        console.log(user, 'after updaton');
         res.status(200).json("updated")
 
 
