@@ -335,8 +335,8 @@ exports.userSearch = async (req, res) => {
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts").sort({ createdAt: -1 })
-        console.log(post);
+        const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
+        console.log(post,'post');
         res.json(post)
     } catch (error) {
         console.log(error);
@@ -586,6 +586,25 @@ exports.updateUserDetails = async (req, res) => {
     } catch (error) {
         res.status(500).json(error)
 
+    }
+}
+exports.deleteComment=async(req,res)=>{
+    try {
+        console.log(req.body,'body');
+        const {postid}=req.body
+        const {commentId}=req.body
+        console.log(commentId,'id');
+        // console.log('here');
+        const post=await Post.find(postid)
+         post.find({"comments._id":commentId})
+        console.log(post,'post');
+        
+        // post.comments.findById(commentId)
+
+        
+    } catch (error) {
+        res.status(500).json(error)
+        
     }
 }
 

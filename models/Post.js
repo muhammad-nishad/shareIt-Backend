@@ -14,7 +14,6 @@ const postSchema = mongoose.Schema(
         },
         description: {
             type: String,
-            // required:true
         },
         img: {
             type: Array,
@@ -67,6 +66,12 @@ const postSchema = mongoose.Schema(
             default: false,
 
         },
+        
+            commentDelete:{
+                type:Boolean,
+                default:false
+            },
+        
     },
     {
         timestamps: true,
