@@ -4,7 +4,8 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require('../helpers/adminJwt')
 const { default: mongoose } = require("mongoose");
 const { post } = require('../routes/authorizer');
-const Post = require('../models/Post')
+const Post = require('../models/Post');
+const { token } = require('morgan');
 exports.addAdmin = async (req, res) => {
    try {
       const { email, password } = req.body;
@@ -50,7 +51,7 @@ exports.login = async (req, res) => {
          }
          const adminToken = generateToken({ id: admin._id, email: admin.email.toString(), }, "30m")
 
-         res.json({ message: "login successfully", token: adminToken })
+         res.json({ message: "login successfully", admin:{...admin.toObject(),token:adminToken} })
       }
    } catch (error) {
       res.status(400).json(error)

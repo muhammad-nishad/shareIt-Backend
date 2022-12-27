@@ -335,8 +335,8 @@ exports.userSearch = async (req, res) => {
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
-        console.log(post,'post');
+        const post = await Post.find({delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
+        console.log(post, 'post');
         res.json(post)
     } catch (error) {
         console.log(error);
@@ -492,9 +492,9 @@ exports.savePost = async (req, res) => {
                 ({
                     $push: {
                         savedPosts: {
-                            $each:[postId],
-                            $position:0
-                            
+                            $each: [postId],
+                            $position: 0
+
                         }
                     }
                 });
@@ -503,7 +503,7 @@ exports.savePost = async (req, res) => {
             console.log("removed")
             await user.updateOne({
                 $pull: {
-                    savedPosts:postId
+                    savedPosts: postId
                 }
             })
             res.status(200).json({ type: "removed" })
@@ -588,23 +588,16 @@ exports.updateUserDetails = async (req, res) => {
 
     }
 }
-exports.deleteComment=async(req,res)=>{
+exports.deleteComment = async (req, res) => {
     try {
-        console.log(req.body,'body');
-        const {postid}=req.body
-        const {commentId}=req.body
-        console.log(commentId,'id');
-        // console.log('here');
-        const post=await Post.find(postid)
-         post.find({"comments._id":commentId})
-        console.log(post,'post');
-        
-        // post.comments.findById(commentId)
-
-        
+        console.log(req.body, 'body');
+        const { commentId } = req.body
+        const post = await Post.findOneAndUpdate({ "comments._id": mongoose.Types.ObjectId(commentId) }, { $set: { "comments.$.commentDelete": true } })
+        res.status(200).json("comment deleted ")
     } catch (error) {
+        console.log(error)
         res.status(500).json(error)
-        
+
     }
 }
 

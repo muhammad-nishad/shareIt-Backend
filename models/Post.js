@@ -7,9 +7,9 @@ const postSchema = mongoose.Schema(
             ref: "User"
             // required:true
         },
-        delete:{
-            type:Boolean,
-            default:false
+        delete: {
+            type: Boolean,
+            default: false
 
         },
         description: {
@@ -31,6 +31,11 @@ const postSchema = mongoose.Schema(
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User'
 
+                },
+
+                commentDelete: {
+                    type: Boolean,
+                    default: false
                 },
                 createdAt: {
                     type: String,
@@ -66,16 +71,16 @@ const postSchema = mongoose.Schema(
             default: false,
 
         },
-        
-            commentDelete:{
-                type:Boolean,
-                default:false
-            },
-        
+
+        // commentDelete: {
+        //     type: Boolean,
+        //     default: false
+        // },
+
     },
     {
         timestamps: true,
-      }
+    }
 
 );
 
