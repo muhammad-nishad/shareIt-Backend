@@ -136,8 +136,9 @@ exports.register = async (req, res) => {
             bDay
         })
         user.save()
-        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
-        res.json({ token: emailVerification })
+        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "7d")
+        console.log(user,'signup');
+        res.json({ user: { ...user.toObject(), token: emailVerification } })
         // req.session.tempUserData = req.body;
         // console.log(req.session,'sessionnnn');
         // console.log(req.session.tempUserData,'tempdata');
@@ -208,7 +209,8 @@ exports.login = async (req, res) => {
         if (!check) {
             return res.status(400).json({ message: "invalid user" })
         }
-        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
+        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "7d")
+        console.log(user,'login');
 
         res.json({ user: { ...user.toObject(), token: emailVerification } })
     } catch (error) {
