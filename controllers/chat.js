@@ -4,7 +4,7 @@ const ChatModel = require('../models/ChatModel');
 // const Chat = require('../models/ChatModel')
 
 exports.createChat = async (req, res) => {
-    console.log(req.body);
+    console.log(req.body,"ttttttt");
     const check = await ChatModel.findOne({members:[req.body.senderId, req.body.receiverId]})
     console.log(check)
     if(!check){
