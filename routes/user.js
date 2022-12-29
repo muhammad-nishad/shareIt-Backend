@@ -27,6 +27,7 @@ router.post('/addProfilePicture',verifyToken,addProfilePicture)
 router.get('/getUser/:userId',getUser)
 router.post('/updateUserDetails',verifyToken,updateUserDetails)
 router.post('/deleteComment',verifyToken,deleteComment)
+router.put('/updatePost',updatePost)
 
 
 module.exports=router;

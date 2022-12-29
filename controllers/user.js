@@ -9,6 +9,7 @@ const { db, ensureIndexes } = require("../models/User");
 const Otp = require('../models/Otp')
 const OtpVerification = require('../nodemailer/nodeMailer');
 const mongoose = require("mongoose");
+const { post } = require("../routes/user");
 
 const sendOtp = async ({ _id, email }, res) => {
     const transport = nodemailer.createTransport({
@@ -137,7 +138,7 @@ exports.register = async (req, res) => {
         })
         user.save()
         const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "7d")
-        console.log(user,'signup');
+        console.log(user, 'signup');
         res.json({ user: { ...user.toObject(), token: emailVerification } })
         // req.session.tempUserData = req.body;
         // console.log(req.session,'sessionnnn');
@@ -210,7 +211,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "invalid user" })
         }
         const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "7d")
-        console.log(user,'login');
+        console.log(user, 'login');
 
         res.json({ user: { ...user.toObject(), token: emailVerification } })
     } catch (error) {
@@ -337,7 +338,7 @@ exports.userSearch = async (req, res) => {
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const post = await Post.find({delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
+        const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
         console.log(post, 'post');
         res.json(post)
     } catch (error) {
@@ -569,11 +570,8 @@ exports.getUser = async (req, res) => {
 // updateUserData
 exports.updateUserDetails = async (req, res) => {
     try {
-        console.log(req.body, 'body');
         const { firstName } = req.body.editData
         const { lastName } = req.body.editData
-        console.log(lastName, 'last');
-        console.log(firstName, 'first');
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid).updateOne({
             $set: {
@@ -598,6 +596,23 @@ exports.deleteComment = async (req, res) => {
         res.status(200).json("comment deleted ")
     } catch (error) {
         console.log(error)
+        res.status(500).json(error)
+
+    }
+}
+
+exports.updatePost = async (req, res) => {
+    const postId = req.params
+    const userid = mongoose.Types.ObjectId(req.user.id)
+    try {
+        const post = await post.findById(postId)
+        if (post.userid == userid) {
+            await post.updateOne({ $set: req.body })
+            res.status(200).json("post updated")
+        }
+
+
+    } catch (error) {
         res.status(500).json(error)
 
     }

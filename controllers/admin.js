@@ -99,3 +99,13 @@ exports.reportedPosts= async (req,res)=>{
       
    }
 }
+exports.sample=async(req,res)=>{
+   try {
+      res.send({message:"hi"})
+      
+   } catch (error) {
+      console.log(error);
+      
+   }
+      // console.log('sample');
+}
