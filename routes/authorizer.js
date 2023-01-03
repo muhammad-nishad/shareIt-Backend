@@ -7,7 +7,7 @@ router.post('/authorizer/addadmin',addAdmin)
 router.post('/authorizer/login',login)
 router.get("/authorizer/getUsers", authMiddleware,getAllUsers);
 router.post('/authorizer/userManagement',authMiddleware,userManagement)
-router.get('/authorizer/reportedPosts',authMiddleware,reportedPosts)
+router.get('/authorizer/reportedPosts',reportedPosts)
 router.get('/authorizer/sample',authMiddleware,sample)
 
 

@@ -545,7 +545,10 @@ exports.addProfilePicture = async (req, res) => {
                 profilePicture: image
             }
         })
-        res.status(200).json("image added succesfully")
+        const updatedUser=await User.findById(userid)
+        const token = generateToken({ id: updatedUser.id, email: updatedUser.email.toString(), }, "7d")
+        res.json({ user: { ...updatedUser.toObject(), token: token } })
+        // res.status(200).json("image added succesfully")
 
 
     } catch (error) {
@@ -611,11 +614,13 @@ exports.updatePost = async (req, res) => {
     const userid = mongoose.Types.ObjectId(req.user?.id)
     try {
         const post = await Post.findById(postId)
+        console.log('hi');
         await post.updateOne({
             $set: {
                 description: data
             }
         })
+        // const token = generateToken({ id: user.id, email: user.email.toString(), }, "7d")
         res.status(200).json("post updated")
 
 
@@ -623,6 +628,25 @@ exports.updatePost = async (req, res) => {
     } catch (error) {
         res.status(500).json(error)
 
+    }
+}
+exports.removeProfile=async(req,res)=>{
+    try {
+        const userid = mongoose.Types.ObjectId(req.user?.id)
+        const user=await User.findById(userid)
+        await User.updateOne({_id:user.id},{
+            $unset:{profilePicture:1}
+        })
+        const updatedUser=await User.findById(userid)
+        const token = generateToken({ id: user.id, email: user.email.toString(), }, "7d")
+        console.log(token,'token');
+        res.json({ user: { ...updatedUser.toObject(), token: token } })
+        
+
+        
+    } catch (error) {
+        res.status(500).json(error)
+        
     }
 }
 
