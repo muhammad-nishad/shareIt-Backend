@@ -10,7 +10,6 @@ const postSchema = mongoose.Schema(
         delete: {
             type: Boolean,
             default: false
-
         },
         description: {
             type: String,
@@ -30,20 +29,17 @@ const postSchema = mongoose.Schema(
                 commentBy: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User'
-
                 },
-
                 commentDelete: {
                     type: Boolean,
                     default: false
                 },
-                createdAt: {
-                    type: String,
-                    default: new Date().toDateString()
-                }
-            }
+                commentAt: {
+                    type:Date,
+                    default: new Date()
+                },
+            },
         ],
-
         report: [
             {
 
@@ -62,7 +58,6 @@ const postSchema = mongoose.Schema(
                 },
             }
         ],
-
         date: {
             type: String
         },
@@ -71,17 +66,10 @@ const postSchema = mongoose.Schema(
             default: false,
 
         },
-
-        // commentDelete: {
-        //     type: Boolean,
-        //     default: false
-        // },
-
     },
     {
         timestamps: true,
     }
-
 );
 
 module.exports = mongoose.model("Post", postSchema)

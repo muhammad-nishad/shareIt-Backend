@@ -312,10 +312,13 @@ exports.addComment = async (req, res) => {
                 $push: {
                     comments: {
                         comment: req.body.values.comment,
-                        commentBy: userid
+                        commentBy: userid,
+                        commentAt: new Date(),
                     }
                 }
-            })
+            },
+            { new: true }
+        )
         res.json(commented)
     } catch (error) {
         res.status(500).json(error)
@@ -350,6 +353,7 @@ exports.getUserPost = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
     try {
+        console.log('hi');
         // const { userid } = req.params;
         const userid = mongoose.Types.ObjectId(req.params.userid)
         // const userid = mongoose.Types.ObjectId(req.user.id)
@@ -602,14 +606,18 @@ exports.deleteComment = async (req, res) => {
 }
 
 exports.updatePost = async (req, res) => {
-    const postId = req.params
-    const userid = mongoose.Types.ObjectId(req.user.id)
+    const { postId } = req.params
+    const { data } = req.body
+    const userid = mongoose.Types.ObjectId(req.user?.id)
     try {
-        const post = await post.findById(postId)
-        if (post.userid == userid) {
-            await post.updateOne({ $set: req.body })
-            res.status(200).json("post updated")
-        }
+        const post = await Post.findById(postId)
+        await post.updateOne({
+            $set: {
+                description: data
+            }
+        })
+        res.status(200).json("post updated")
+
 
 
     } catch (error) {
