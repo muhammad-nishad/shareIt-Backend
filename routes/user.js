@@ -1,7 +1,7 @@
 const express=require('express');
 const {register,login,follow,unfollow,posts,updatePost,deletePost,likePost,
     verifyotp,userSearch,getUserPost,addComment,getUserProfile,getAllFollowing,
-    getAllFollowers,reportPost,getPeopleMayKnow,savePost,getSavedPosts,addProfilePicture,getUser,updateUserDetails,deleteComment, removeProfile}=require('../controllers/user')
+    getAllFollowers,reportPost,getPeopleMayKnow,savePost,getSavedPosts,addProfilePicture,getUser,updateUserDetails,deleteComment, removeProfile, unsavePost}=require('../controllers/user')
 const router=express.Router()
 const verifyToken=require('../middlewares/authMiddleware')
 
@@ -50,6 +50,9 @@ router.post('/reportPost',verifyToken,reportPost)
 // savePosts
 router.post('/savedPost',verifyToken,savePost)
 
+// unsavePosts
+router.post('/unsavePost',verifyToken,unsavePost)
+
 // showAllsavedPosts
 router.get('/getallSavedPosts',verifyToken,getSavedPosts)
 
@@ -67,7 +70,6 @@ router.get('/getallFollowers',verifyToken,getAllFollowers)
 router.get('/getPeopleMayKnow',verifyToken,getPeopleMayKnow)
 
 
-
 // addProfilePicture
 router.post('/addProfilePicture',verifyToken,addProfilePicture)
 
@@ -79,6 +81,7 @@ router.post('/updateUserDetails',verifyToken,updateUserDetails)
 
 
 router.patch('/removeProfile',verifyToken,removeProfile)
+
 
 
 

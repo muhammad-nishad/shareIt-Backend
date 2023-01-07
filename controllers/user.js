@@ -10,6 +10,8 @@ const Otp = require('../models/Otp')
 const OtpVerification = require('../nodemailer/nodeMailer');
 const mongoose = require("mongoose");
 const { post } = require("../routes/user");
+// var ObjectId = require('mongodb').ObjectID;
+
 
 const sendOtp = async ({ _id, email }, res) => {
     const transport = nodemailer.createTransport({
@@ -342,7 +344,7 @@ exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture savedPosts ").populate('comments.commentBy').sort({ createdAt: -1 })
-        console.log(post, 'post');
+        console.log(post, 'post777777777777777777777777777777777777777777777');
         res.json(post)
     } catch (error) {
         console.log(error);
@@ -491,40 +493,63 @@ exports.getPeopleMayKnow = async (req, res) => {
 // save a Post
 exports.savePost = async (req, res) => {
     try {
+        console.log(req.body);
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
         const postId = mongoose.Types.ObjectId(req.body.postid)
-        if (!user.savedPosts.includes(postId)) {
-            await user.updateOne
-                ({
-                    $push: {
-                        savedPosts: {
-                            $each: [postId],
-                            $position: 0
+        console.log(postId);
+        const valid = user.savedPosts.includes(postId)
+        if (valid) return res.send('yes')
+        await user.updateOne({
+            $push: {
+                savedPosts: {
+                    $each: [postId],
+                    $position: 0
 
-                        }
-                    }
-                });
-            res.status(200).json({ type: "added" })
-        } else {
-            console.log("removed")
-            await user.updateOne({
-                $pull: {
-                    savedPosts: postId
                 }
-            })
-            res.status(200).json({ type: "removed" })
-        }
+            }
+        });
+        const updatedUser = await User.findById(userid)
+        const token = generateToken({ id: updatedUser.id, email: updatedUser.email.toString(), }, "7d")
+        res.json({ user: { ...updatedUser.toObject(), token: token } })
     } catch (error) {
         console.log(error);
     }
 }
 
+exports.unsavePost = async (req, res) => {
+    try {
+        console.log(req.body);
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const user = await User.findById(userid)
+        const postId = mongoose.Types.ObjectId(req.body.postid)
+        console.log(postId);
+        const valid = user.savedPosts.includes(postId)
+        if (valid)
+            user.updateOne({
+                $pull: {
+                    savedPosts: postId
+                }
+            }).then(async(data) => {
+                const updatedUser = await User.findById(userid)
+                const token = generateToken({ id: updatedUser.id, email: updatedUser.email.toString(), }, "7d")
+                res.json({ user: { ...updatedUser.toObject(), token: token } })
+                // res.status(200).json({ message: "post added to savedpost" })
+            })
+        else
+            res.status(200).json({ message: "already removed" })
+    } catch (error) {
+        console.log(error, 'error');
+        res.status(500).json(error)
+
+    }
+}
 // show all SavedPosts
 exports.getSavedPosts = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user = await User.findById(userid).populate('savedPosts')
+        const user = await User.findById(userid).populate('savedPosts').populate('savedPosts.comments.commentBy')
+        console.log(user,'888888888888888888888888888888');
         res.status(200).json(user)
 
     } catch (error) {
@@ -545,7 +570,7 @@ exports.addProfilePicture = async (req, res) => {
                 profilePicture: image
             }
         })
-        const updatedUser=await User.findById(userid)
+        const updatedUser = await User.findById(userid)
         const token = generateToken({ id: updatedUser.id, email: updatedUser.email.toString(), }, "7d")
         res.json({ user: { ...updatedUser.toObject(), token: token } })
         // res.status(200).json("image added succesfully")
@@ -630,24 +655,25 @@ exports.updatePost = async (req, res) => {
 
     }
 }
-exports.removeProfile=async(req,res)=>{
+exports.removeProfile = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user?.id)
-        const user=await User.findById(userid)
-        await User.updateOne({_id:user.id},{
-            $unset:{profilePicture:1}
+        const user = await User.findById(userid)
+        await User.updateOne({ _id: user.id }, {
+            $unset: { profilePicture: 1 }
         })
-        const updatedUser=await User.findById(userid)
+        const updatedUser = await User.findById(userid)
         const token = generateToken({ id: user.id, email: user.email.toString(), }, "7d")
-        console.log(token,'token');
+        console.log(token, 'token');
         res.json({ user: { ...updatedUser.toObject(), token: token } })
-        
 
-        
+
+
     } catch (error) {
         res.status(500).json(error)
-        
+
     }
 }
+
 
 
